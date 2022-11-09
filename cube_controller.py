@@ -13,8 +13,6 @@ claw_motor_port = nxt.motor.Port.A
 table_motor_port = nxt.motor.Port.B
 
 quarter_turn_degrees = 270
-turn_limit_degrees = quarter_turn_degrees * 3
-full_turn_degrees = quarter_turn_degrees * 4
 
 action_queue = queue.Queue()
 
@@ -69,7 +67,7 @@ class Nxt:
 
     def rotate_motor(self, port: nxt.motor.Port, degrees):
         relative_power = self.motor_power if degrees > 0 else -self.motor_power
-        self.mc.cmd(port, relative_power, abs(degrees), smoothstart=False, brake=True)
+        self.mc.cmd(port, relative_power, abs(degrees), smoothstart=True, brake=True)
         self.wait_for_motors()
 
     def stop(self):
@@ -106,15 +104,9 @@ class RobotController:
         self.table_rotation += degrees
 
     def rotate_table_cw(self):
-        if self.table_rotation >= turn_limit_degrees:
-            self.exec_table_rotation(-turn_limit_degrees)
-        else:
             self.exec_table_rotation(quarter_turn_degrees)
 
     def rotate_table_acw(self):
-        if self.table_rotation <= 0:
-            self.exec_table_rotation(turn_limit_degrees)
-        else:
             self.exec_table_rotation(-quarter_turn_degrees)
 
     def exec_claw_hold_action(self):
@@ -128,16 +120,17 @@ class RobotController:
             self.is_claw_holding = False
 
     def exec_claw_flip_action(self):
-        rotation_needed = self.claw_hold_flip_rotation if self.is_claw_holding else self.claw_full_flip_rotation
+        self.exec_claw_hold_action()
 
-        self.nxt.rotate_motor(claw_motor_port, rotation_needed)
-        self.nxt.rotate_motor(claw_motor_port, -rotation_needed)
+        self.nxt.rotate_motor(claw_motor_port, self.claw_hold_flip_rotation)
+        self.nxt.rotate_motor(claw_motor_port, -self.claw_full_flip_rotation)
+        self.is_claw_holding = False
 
 
 robot = RobotController(
     motor_power=100,
-    claw_hold_rotation=50,  # TODO: find the right value for this
-    claw_full_flip_rotation=90  # TODO: find the right value for this
+    claw_hold_rotation=-90,  # TODO: find the right value for this
+    claw_full_flip_rotation=-200  # TODO: find the right value for this
 )
 
 
