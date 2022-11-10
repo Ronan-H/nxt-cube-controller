@@ -17,6 +17,10 @@ double_turn_degrees = quarter_turn_degrees * 2
 
 max_input_queue_size = 1
 
+motor_power=100
+claw_hold_rotation=-100
+claw_full_flip_rotation=-195
+
 action_queue = queue.Queue()
 
 
@@ -130,17 +134,25 @@ class RobotController:
             self.is_claw_holding = False
 
     def exec_claw_flip_action(self):
+        was_holding = self.is_claw_holding
+
         self.exec_claw_hold_action()
 
         self.nxt.rotate_motor(claw_motor_port, self.claw_hold_flip_rotation)
-        self.nxt.rotate_motor(claw_motor_port, -self.claw_full_flip_rotation)
-        self.is_claw_holding = False
+
+        if was_holding:
+            # return to holding position
+            self.nxt.rotate_motor(claw_motor_port, -self.claw_hold_flip_rotation)
+        else:
+            # fully retract claw arm
+            self.nxt.rotate_motor(claw_motor_port, -self.claw_full_flip_rotation)
+            self.is_claw_holding = False
 
 
 robot = RobotController(
     motor_power=100,
     claw_hold_rotation=-100,
-    claw_full_flip_rotation=-220
+    claw_full_flip_rotation=-210
 )
 
 
