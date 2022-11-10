@@ -29,7 +29,7 @@ class RobotAction(Enum):
 
 
 ps3_button_down_mapping = {
-    1: RobotAction.CLEAR_ACTION_QUEUE,
+    1: RobotAction.EXIT,
     2: RobotAction.EXIT,
 
     7: RobotAction.LEFT_ROT,
