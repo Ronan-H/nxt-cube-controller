@@ -13,6 +13,7 @@ claw_motor_port = nxt.motor.Port.A
 table_motor_port = nxt.motor.Port.B
 
 quarter_turn_degrees = 270
+double_turn_degrees = quarter_turn_degrees * 2
 
 max_input_queue_size = 1
 
@@ -20,7 +21,7 @@ action_queue = queue.Queue()
 
 
 class RobotAction(Enum):
-    CLEAR_ACTION_QUEUE, EXIT, LEFT_ROT, RIGHT_ROT, CLAW_HOLD, CLAW_UNHOLD, CLAW_FLIP = range(7)
+    CLEAR_ACTION_QUEUE, EXIT, LEFT_ROT, RIGHT_ROT, DOUBLE_ROT, CLAW_HOLD, CLAW_UNHOLD, CLAW_FLIP = range(8)
 
 
 ps3_button_down_mapping = {
@@ -30,7 +31,7 @@ ps3_button_down_mapping = {
     7: RobotAction.LEFT_ROT,
     5: RobotAction.RIGHT_ROT,
 
-    10: RobotAction.CLAW_HOLD,
+    10: RobotAction.DOUBLE_ROT,
     11: RobotAction.CLAW_HOLD,
 
     12: RobotAction.CLAW_FLIP,
@@ -94,6 +95,8 @@ class RobotController:
             self.rotate_table_acw()
         elif action == RobotAction.RIGHT_ROT:
             self.rotate_table_cw()
+        elif action == RobotAction.DOUBLE_ROT:
+            self.rotate_table_double()
         elif action == RobotAction.CLAW_HOLD:
             self.exec_claw_hold_action()
         elif action == RobotAction.CLAW_UNHOLD:
@@ -108,10 +111,13 @@ class RobotController:
         self.table_rotation += degrees
 
     def rotate_table_cw(self):
-            self.exec_table_rotation(quarter_turn_degrees)
+        self.exec_table_rotation(quarter_turn_degrees)
 
     def rotate_table_acw(self):
-            self.exec_table_rotation(-quarter_turn_degrees)
+        self.exec_table_rotation(-quarter_turn_degrees)
+
+    def rotate_table_double(self):
+        self.exec_table_rotation(double_turn_degrees)
 
     def exec_claw_hold_action(self):
         if not self.is_claw_holding:
