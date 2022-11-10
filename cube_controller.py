@@ -85,7 +85,6 @@ class Nxt:
 
 class RobotController:
     def __init__(self, motor_power, claw_hold_rotation, claw_full_flip_rotation):
-        self.table_rotation = 0 # degrees, in the range 0 - 270 (360 would be represented as 0)
         self.is_claw_holding = False
         self.claw_hold_rotation = claw_hold_rotation
         self.claw_full_flip_rotation = claw_full_flip_rotation
@@ -108,11 +107,8 @@ class RobotController:
         elif action == RobotAction.CLAW_FLIP:
             self.exec_claw_flip_action()
 
-        print('New table rotation:', self.table_rotation)
-
     def exec_table_rotation(self, degrees):
         self.nxt.rotate_motor(table_motor_port, degrees)
-        self.table_rotation += degrees
 
     def rotate_table_cw(self):
         self.exec_table_rotation(quarter_turn_degrees)
@@ -151,8 +147,8 @@ class RobotController:
 
 robot = RobotController(
     motor_power=100,
-    claw_hold_rotation=-100,
-    claw_full_flip_rotation=-210
+    claw_hold_rotation=-90,
+    claw_full_flip_rotation=-205
 )
 
 
