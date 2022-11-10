@@ -14,6 +14,8 @@ table_motor_port = nxt.motor.Port.B
 
 quarter_turn_degrees = 270
 
+max_input_queue_size = 1
+
 action_queue = queue.Queue()
 
 
@@ -55,9 +57,11 @@ class Nxt:
         b = None
         while b is None:
             try:
-                b = nxt.locator.find()
+                b = nxt.locator.find(backends=['usb'])
             except Exception as e:
                 print(e)
+                sleep(0.1)
+        print('Found a brick!')
         return b
 
     def wait_for_motors(self):
@@ -67,7 +71,7 @@ class Nxt:
 
     def rotate_motor(self, port: nxt.motor.Port, degrees):
         relative_power = self.motor_power if degrees > 0 else -self.motor_power
-        self.mc.cmd(port, relative_power, abs(degrees), smoothstart=True, brake=True)
+        self.mc.cmd(port, relative_power, abs(degrees), smoothstart=True, brake=True, speedreg=False)
         self.wait_for_motors()
 
     def stop(self):
@@ -129,8 +133,8 @@ class RobotController:
 
 robot = RobotController(
     motor_power=100,
-    claw_hold_rotation=-90,  # TODO: find the right value for this
-    claw_full_flip_rotation=-200  # TODO: find the right value for this
+    claw_hold_rotation=-100,
+    claw_full_flip_rotation=-220
 )
 
 
@@ -147,6 +151,9 @@ def process_action(action: RobotAction):
 
 def init_ps3_controller_events():
     def on_input_received(key: Key):
+        if action_queue.qsize() >= max_input_queue_size:
+            return
+
         key_str = str(key)
         if key_str.startswith('Button '):
             button = int(key_str[7:])
