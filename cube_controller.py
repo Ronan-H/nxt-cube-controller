@@ -9,7 +9,7 @@ from pyjoystick.sdl2 import Key, run_event_loop
 import queue
 import threading
 
-claw_motor_port = nxt.motor.Port.A
+claw_motor_port = nxt.motor.Port.C
 table_motor_port = nxt.motor.Port.B
 
 quarter_turn_degrees = 270
@@ -29,24 +29,23 @@ class RobotAction(Enum):
 
 
 ps3_button_down_mapping = {
-    1: RobotAction.EXIT,
-    2: RobotAction.EXIT,
+    11: RobotAction.EXIT,
+    12: RobotAction.EXIT,
 
-    7: RobotAction.LEFT_ROT,
-    5: RobotAction.RIGHT_ROT,
+    15: RobotAction.LEFT_ROT,
+    16: RobotAction.RIGHT_ROT,
 
-    10: RobotAction.DOUBLE_ROT,
-    11: RobotAction.CLAW_HOLD,
+    4: RobotAction.DOUBLE_ROT,
+    5: RobotAction.CLAW_HOLD,
 
-    12: RobotAction.CLAW_FLIP,
-    13: RobotAction.CLAW_FLIP,
-    14: RobotAction.CLAW_FLIP,
-    15: RobotAction.CLAW_FLIP,
+    0: RobotAction.CLAW_FLIP,
+    1: RobotAction.CLAW_FLIP,
+    2: RobotAction.CLAW_FLIP,
+    3: RobotAction.CLAW_FLIP,
 }
 
 ps3_button_up_mapping = {
-    10: RobotAction.CLAW_UNHOLD,
-    11: RobotAction.CLAW_UNHOLD,
+    5: RobotAction.CLAW_UNHOLD,
 }
 
 
